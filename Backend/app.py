@@ -1,13 +1,18 @@
 from flask import Flask, request, render_template, jsonify
+import os
 import pickle
 import json
 import numpy as np
 
 # ---------------- Load Model ----------------
-model = pickle.load(open("banglore_home_price_model.pickle", "rb"))
 
 # ---------------- Load Columns ----------------
-with open("columns.json", "r") as f:
+base_dir = os.path.dirname(__file__)
+model_path = os.path.join(base_dir, "banglore_home_price_model.pickle")
+model = pickle.load(open(model_path, "rb"))
+
+columns_path = os.path.join(base_dir, "columns.json")
+with open(columns_path, "r") as f:
     cols = json.load(f)
 
 # Handle both possible keys in JSON
@@ -71,4 +76,5 @@ def get_locations():
 
 # ---------------- Run ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
